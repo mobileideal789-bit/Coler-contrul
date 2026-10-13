@@ -22,25 +22,14 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      # این مرحله بسیار مهم است: تنظیم پروکسی برای دور زدن تحریم گوگل
-      - name: Set up Android SDK with Proxy
-        env:
-          # استفاده از یک پروکسی رایگان یا معتبر (در صورت نیاز آدرس پروکسی خود را جایگزین کنید)
-          # در اینجا از یک پروکسی عمومی نمونه استفاده شده است. برای پروژه‌های جدی بهتر است پروکسی اختصاصی داشته باشید.
-          HTTP_PROXY: http://127.0.0.1:8080 
-          HTTPS_PROXY: http://127.0.0.1:8080
+      # این اکشن به صورت خودکار Android SDK را نصب و تنظیم می‌کند
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      # نصب پلتفرم و بیلد تولز مورد نیاز پروژه
+      - name: Install Android SDK Components
         run: |
-          # تنظیم متغیرهای محیطی برای اندروید
-          echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> $GITHUB_ENV
-          echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
-          
-          # تنظیم آینه‌های داخلی برای Gradle و SDK
-          # این کار باعث می‌شود دانلودها از سرورهای غیرتحریمی انجام شود
-          echo "sdk.dir=$ANDROID_HOME" > local.properties
-          
-          # نصب پلتفرم‌ها و بیلد تولز مورد نیاز (نسخه‌ها را با پروژه خود تطبیق دهید)
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
